@@ -98,13 +98,14 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   });
                 }
 
-                // Check if the link has alias text
+                // The link has an explicit alias when its display text differs
+                // from the (pre-resolution) href; a bare link's text is its path.
                 const firstChild = node.children[0];
-                if (
+                const hasAlias =
                   node.children.length === 1 &&
                   firstChild?.type === "text" &&
-                  firstChild.value !== dest
-                ) {
+                  firstChild.value !== dest;
+                if (hasAlias) {
                   // Add the 'alias' class if the text content is not the same as the href
                   classes.push("alias");
                 }
@@ -143,8 +144,11 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   }
                 }
 
-                // rewrite link internals if prettylinks is on
-                if (opts.prettyLinks && isInternal && node.children.length === 1) {
+                // rewrite link internals if prettylinks is on. Only strip folders
+                // from a bare link whose text is its own path; skip explicit
+                // aliases, or a "/" in the alias would truncate the visible text
+                // to its last path segment (e.g. "Setup/Config" -> "Config").
+                if (opts.prettyLinks && isInternal && !hasAlias && node.children.length === 1) {
                   const textChild = node.children[0] as Text | undefined;
                   if (textChild?.type === "text" && !textChild.value.startsWith("#")) {
                     textChild.value = path.basename(textChild.value);

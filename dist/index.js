@@ -431,7 +431,8 @@ var CrawlLinks = (userOpts) => {
                   });
                 }
                 const firstChild = node.children[0];
-                if (node.children.length === 1 && firstChild?.type === "text" && firstChild.value !== dest) {
+                const hasAlias = node.children.length === 1 && firstChild?.type === "text" && firstChild.value !== dest;
+                if (hasAlias) {
                   classes.push("alias");
                 }
                 node.properties.className = classes;
@@ -457,7 +458,7 @@ var CrawlLinks = (userOpts) => {
                     node.properties.className = classes;
                   }
                 }
-                if (opts.prettyLinks && isInternal && node.children.length === 1) {
+                if (opts.prettyLinks && isInternal && !hasAlias && node.children.length === 1) {
                   const textChild = node.children[0];
                   if (textChild?.type === "text" && !textChild.value.startsWith("#")) {
                     textChild.value = path.basename(textChild.value);
