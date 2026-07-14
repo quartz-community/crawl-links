@@ -168,6 +168,24 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   node.properties.src = dest;
                 }
               }
+
+              // <object> embeds (e.g. SVGs, which are rendered as
+              // <object type="image/svg+xml"> to keep the SVG DOM live) reference
+              // their resource via `data` rather than `src`, so they need their own
+              // resolution pass — otherwise the link stays unresolved and 404s for
+              // notes outside the vault root.
+              if (
+                node.tagName === "object" &&
+                node.properties &&
+                typeof node.properties.data === "string" &&
+                !isAbsoluteUrlWithOptions(node.properties.data, { httpOnly: false })
+              ) {
+                node.properties.data = transformLink(
+                  fileSlug,
+                  node.properties.data as RelativeURL,
+                  transformOptions,
+                );
+              }
             });
 
             const frontmatterLinks = (file.data.frontmatterLinks as string[] | undefined) ?? [];
