@@ -474,6 +474,13 @@ var CrawlLinks = (userOpts) => {
                   node.properties.src = dest;
                 }
               }
+              if (node.tagName === "object" && node.properties && typeof node.properties.data === "string" && !isAbsoluteUrlWithOptions(node.properties.data)) {
+                node.properties.data = transformLink(
+                  fileSlug,
+                  node.properties.data,
+                  transformOptions
+                );
+              }
             });
             const frontmatterLinks = file.data.frontmatterLinks ?? [];
             for (const fmLink of frontmatterLinks) {
