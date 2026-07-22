@@ -40,7 +40,8 @@
     "format": "prettier . --check",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run lint && npm run format && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run format && npm run test",
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "preact": "^10.0.0"
@@ -51,8 +52,8 @@
     }
   },
   "dependencies": {
-    "@quartz-community/types": "github:quartz-community/types",
-    "@quartz-community/utils": "github:quartz-community/utils"
+    "@quartz-community/types": "^0.2.1",
+    "@quartz-community/utils": "^0.1.0"
   },
   "devDependencies": {
     "@types/hast": "^3.0.4",
@@ -119,5 +120,8 @@
         "type": "boolean"
       }
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
