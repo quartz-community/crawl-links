@@ -1,6 +1,6 @@
 {
   "name": "@quartz-community/crawl-links",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Crawl links transformer plugin for Quartz",
   "type": "module",
   "license": "MIT",
