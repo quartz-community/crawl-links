@@ -114,7 +114,6 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   node.properties.target = "_blank";
                 }
 
-                // don't process external links or intra-document anchors
                 const isInternal = !(
                   isAbsoluteUrlWithOptions(dest, { httpOnly: false }) || dest.startsWith("#")
                 );
@@ -145,8 +144,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
 
                 // rewrite link internals if prettylinks is on
                 if (opts.prettyLinks && isInternal && node.children.length === 1) {
+                  const hasAlias = classes.includes("alias");
                   const textChild = node.children[0] as Text | undefined;
-                  if (textChild?.type === "text" && !textChild.value.startsWith("#")) {
+                  if (textChild?.type === "text" && !textChild.value.startsWith("#") && !hasAlias) {
                     textChild.value = path.basename(textChild.value);
                   }
                 }
