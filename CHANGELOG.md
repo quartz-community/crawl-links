@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- c8a04da: Fix prettyLinks truncating explicit wikilink aliases that contain a slash. Previously `path.basename()` was applied to all link text, turning an alias like `Part 1/Part 2` into just `Part 2`. prettyLinks now skips links that have an explicit alias.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
