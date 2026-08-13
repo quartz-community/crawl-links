@@ -35,6 +35,20 @@ const defaultOptions: CrawlLinksOptions = {
   disableBrokenWikilinks: false,
 };
 
+// Collapse hyphen runs in a resolved internal URL's path (anchors untouched —
+// heading ids keep whatever the heading slugger produced). This pairs with the
+// host engine's slugifyFilePath wrapper (quartz/util/path.ts), which collapses
+// runs so Obsidian-style names like "Session 24 - Title" publish at
+// "session-24-title" instead of "session-24---title": link targets are
+// slugified with the bundled (uncollapsed) slugifier, matched against allSlugs
+// via the engine-provided legacy variants, then collapsed here so the final
+// href points at the canonical page. Only correct on hosts that collapse; do
+// not upstream without gating on an option.
+function collapseDashRuns(url: RelativeURL): RelativeURL {
+  const [pathPart, anchor] = splitAnchor(url);
+  return (pathPart.replace(/-{2,}/g, "-") + anchor) as RelativeURL;
+}
+
 const isAbsoluteUrlWithOptions = isAbsoluteUrl as (
   url: string,
   options?: { httpOnly?: boolean },
@@ -119,7 +133,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   isAbsoluteUrlWithOptions(dest, { httpOnly: false }) || dest.startsWith("#")
                 );
                 if (isInternal) {
-                  dest = node.properties.href = transformLink(fileSlug, dest, transformOptions);
+                  dest = node.properties.href = collapseDashRuns(
+                    transformLink(fileSlug, dest, transformOptions),
+                  );
 
                   // url.resolve is considered legacy
                   // WHATWG equivalent https://nodejs.dev/en/api/v18/url/#urlresolvefrom-to
@@ -164,7 +180,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
 
                 if (!isAbsoluteUrlWithOptions(node.properties.src, { httpOnly: false })) {
                   let dest = node.properties.src as RelativeURL;
-                  dest = node.properties.src = transformLink(fileSlug, dest, transformOptions);
+                  dest = node.properties.src = collapseDashRuns(
+                    transformLink(fileSlug, dest, transformOptions),
+                  );
                   node.properties.src = dest;
                 }
               }
@@ -180,10 +198,8 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                 typeof node.properties.data === "string" &&
                 !isAbsoluteUrlWithOptions(node.properties.data, { httpOnly: false })
               ) {
-                node.properties.data = transformLink(
-                  fileSlug,
-                  node.properties.data as RelativeURL,
-                  transformOptions,
+                node.properties.data = collapseDashRuns(
+                  transformLink(fileSlug, node.properties.data as RelativeURL, transformOptions),
                 );
               }
             });
@@ -192,7 +208,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
             for (const fmLink of frontmatterLinks) {
               const [targetRaw] = splitAnchor(fmLink);
               if (!targetRaw) continue;
-              const dest = transformLink(fileSlug, targetRaw, transformOptions);
+              const dest = collapseDashRuns(transformLink(fileSlug, targetRaw, transformOptions));
               const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true));
               const [canonicalRaw] = splitAnchor(url.pathname);
               let canonical = canonicalRaw;

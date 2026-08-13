@@ -382,6 +382,10 @@ var defaultOptions = {
   externalLinkIcon: true,
   disableBrokenWikilinks: false
 };
+function collapseDashRuns(url) {
+  const [pathPart, anchor] = splitAnchor(url);
+  return pathPart.replace(/-{2,}/g, "-") + anchor;
+}
 var isAbsoluteUrlWithOptions = isAbsoluteUrl;
 var CrawlLinks = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
@@ -440,7 +444,9 @@ var CrawlLinks = (userOpts) => {
                 }
                 const isInternal = !(isAbsoluteUrlWithOptions(dest) || dest.startsWith("#"));
                 if (isInternal) {
-                  dest = node.properties.href = transformLink(fileSlug, dest, transformOptions);
+                  dest = node.properties.href = collapseDashRuns(
+                    transformLink(fileSlug, dest, transformOptions)
+                  );
                   const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true));
                   const canonicalDest = url.pathname;
                   const [destCanonicalRaw, _destAnchor] = splitAnchor(canonicalDest);
@@ -470,15 +476,15 @@ var CrawlLinks = (userOpts) => {
                 }
                 if (!isAbsoluteUrlWithOptions(node.properties.src)) {
                   let dest = node.properties.src;
-                  dest = node.properties.src = transformLink(fileSlug, dest, transformOptions);
+                  dest = node.properties.src = collapseDashRuns(
+                    transformLink(fileSlug, dest, transformOptions)
+                  );
                   node.properties.src = dest;
                 }
               }
               if (node.tagName === "object" && node.properties && typeof node.properties.data === "string" && !isAbsoluteUrlWithOptions(node.properties.data)) {
-                node.properties.data = transformLink(
-                  fileSlug,
-                  node.properties.data,
-                  transformOptions
+                node.properties.data = collapseDashRuns(
+                  transformLink(fileSlug, node.properties.data, transformOptions)
                 );
               }
             });
@@ -486,7 +492,7 @@ var CrawlLinks = (userOpts) => {
             for (const fmLink of frontmatterLinks) {
               const [targetRaw] = splitAnchor(fmLink);
               if (!targetRaw) continue;
-              const dest = transformLink(fileSlug, targetRaw, transformOptions);
+              const dest = collapseDashRuns(transformLink(fileSlug, targetRaw, transformOptions));
               const url = new URL(dest, "https://base.com/" + stripSlashes(curSlug, true));
               const [canonicalRaw] = splitAnchor(url.pathname);
               let canonical = canonicalRaw;
