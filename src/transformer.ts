@@ -40,6 +40,14 @@ const isAbsoluteUrlWithOptions = isAbsoluteUrl as (
   options?: { httpOnly?: boolean },
 ) => boolean;
 
+function safeDecodeURI(uri: string): string {
+  try {
+    return decodeURI(uri);
+  } catch {
+    return uri;
+  }
+}
+
 export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
   userOpts?: Partial<CrawlLinksOptions>,
 ) => {
@@ -103,7 +111,9 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                 if (
                   node.children.length === 1 &&
                   firstChild?.type === "text" &&
-                  firstChild.value !== dest
+                  firstChild.value !== dest &&
+                  // the href arrives percent-encoded, so `Folder/Name With Space` has href `Folder/Name%20With%20Space`
+                  firstChild.value !== safeDecodeURI(dest)
                 ) {
                   // Add the 'alias' class if the text content is not the same as the href
                   classes.push("alias");
