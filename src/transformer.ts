@@ -168,6 +168,27 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   node.properties.src = dest;
                 }
               }
+
+              // <object data="…"> (e.g. SVG embeds from ObsidianFlavoredMarkdown) and
+              // <source src="…"> (inside <video>/<audio>/<picture>) reference files too.
+              // Resolve them the same way as img/video src so they work from any page depth.
+              const resourceAttr =
+                node.tagName === "object" ? "data" : node.tagName === "source" ? "src" : undefined;
+              if (resourceAttr && node.properties) {
+                const value = node.properties[resourceAttr];
+                if (
+                  typeof value === "string" &&
+                  value.length > 0 &&
+                  !value.startsWith("#") &&
+                  !isAbsoluteUrlWithOptions(value, { httpOnly: false })
+                ) {
+                  node.properties[resourceAttr] = transformLink(
+                    fileSlug,
+                    value as RelativeURL,
+                    transformOptions,
+                  );
+                }
+              }
             });
 
             const frontmatterLinks = (file.data.frontmatterLinks as string[] | undefined) ?? [];

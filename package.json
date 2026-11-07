@@ -121,6 +121,32 @@
       "disableBrokenWikilinks": {
         "type": "boolean"
       }
+    },
+    "capabilities": {
+      "provides": {
+        "data": [
+          "links"
+        ],
+        "dom": [
+          ".internal",
+          ".external",
+          ".broken"
+        ]
+      },
+      "requires": {
+        "data": [
+          "slug"
+        ]
+      },
+      "optional": {
+        "data": [
+          {
+            "name": "frontmatterLinks",
+            "from": "note-properties",
+            "reason": "links in frontmatter properties are not counted"
+          }
+        ]
+      }
     }
   },
   "publishConfig": {
