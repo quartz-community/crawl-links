@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- 59ba15c: Resolve `<object data>` and `<source src>` links like image sources, fixing 404s for embedded SVGs (e.g. `![[star.svg]]`).
+
 ## 1.0.0
 
 ### Major Changes
