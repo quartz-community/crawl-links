@@ -1,6 +1,12 @@
 import type { QuartzTransformerPlugin, BuildCtx } from "@quartz-community/types";
 import type { FullSlug, RelativeURL, SimpleSlug, TransformOptions } from "@quartz-community/utils";
-import { stripSlashes, simplifySlug, splitAnchor, transformLink } from "@quartz-community/utils";
+import {
+  resolveAnchorHref,
+  stripSlashes,
+  simplifySlug,
+  splitAnchor,
+  transformLink,
+} from "@quartz-community/utils";
 import path from "path";
 import { visit } from "unist-util-visit";
 import isAbsoluteUrl from "is-absolute-url";
@@ -58,6 +64,13 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
               strategy: opts.markdownLinkResolution,
               allSlugs: ctx.allSlugs,
             };
+
+            // Every id on the page, for same-page #anchor links
+            const pageIds = new Set<string>();
+            visit(tree, "element", (node: Element) => {
+              const id = node.properties?.id;
+              if (typeof id === "string" && id !== "") pageIds.add(id);
+            });
 
             visit(tree, "element", (node: Element) => {
               // rewrite all links
@@ -117,6 +130,11 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                 const isInternal = !(
                   isAbsoluteUrlWithOptions(dest, { httpOnly: false }) || dest.startsWith("#")
                 );
+                if (dest.startsWith("#")) {
+                  // A same-page anchor written as a heading's text (`[x](<#My Heading>)`) is
+                  // slugged like the heading's id (shared slugHeading)
+                  node.properties.href = resolveAnchorHref(dest, pageIds);
+                }
                 if (isInternal) {
                   dest = node.properties.href = transformLink(fileSlug, dest, transformOptions);
 
