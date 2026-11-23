@@ -78,3 +78,25 @@ describe("links to another note's heading", () => {
     }
   });
 });
+
+describe("footnote anchors", () => {
+  const fn = (props: Record<string, unknown>): Element => ({
+    type: "element",
+    tagName: "a",
+    properties: { href: "#user-content-fn-1", ...props },
+    children: [{ type: "text", value: "1" }],
+  });
+
+  it("stay internal (popovers) without Obsidian's note-link class", () => {
+    const [ref, back, link] = run([
+      fn({ dataFootnoteRef: "" }),
+      fn({ dataFootnoteBackref: "" }),
+      a("#heading"),
+    ]);
+    expect(ref!.properties.className).toContain("internal");
+    expect(ref!.properties.className).not.toContain("internal-link");
+    expect(back!.properties.className).not.toContain("internal-link");
+    // A link to a heading is a note link, as in Obsidian.
+    expect(link!.properties.className).toContain("internal-link");
+  });
+});
