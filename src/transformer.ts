@@ -33,6 +33,21 @@ export interface CrawlLinksOptions {
   disableBrokenWikilinks: boolean;
 }
 
+/**
+ * Whether a link's target is a page of the site. Tag and folder pages are generated after
+ * the transformers run, so they aren't in `allSlugs` yet: a tag page (`tags/…`) exists for
+ * every tag that is used, and a folder page (`folder/index`) for every folder with content.
+ */
+export function pageExists(allSlugs: readonly string[], full: string): boolean {
+  if (allSlugs.includes(full)) return true;
+  if (full === "index" || full.startsWith("tags/")) return true;
+  if (full.endsWith("/index")) {
+    const folder = full.slice(0, -"index".length);
+    return allSlugs.some((s) => s.startsWith(folder));
+  }
+  return false;
+}
+
 const defaultOptions: CrawlLinksOptions = {
   markdownLinkResolution: "absolute",
   prettyLinks: true,
@@ -155,7 +170,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   outgoing.add(simple);
                   node.properties["data-slug"] = full;
 
-                  if (opts.disableBrokenWikilinks && !ctx.allSlugs.includes(full)) {
+                  if (opts.disableBrokenWikilinks && !pageExists(ctx.allSlugs, full)) {
                     classes.push("broken");
                     node.properties.className = classes;
                   }

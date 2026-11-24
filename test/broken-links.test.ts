@@ -47,6 +47,15 @@ describe("disableBrokenWikilinks - default (on)", () => {
     expect(hasClass(link, "broken")).toBe(true);
   });
 
+  it("does not mark tag and folder pages, which are generated later", () => {
+    for (const href of ["tags/specimen", "folder/"]) {
+      const link = runTransform(makeAnchorTree(href), {}, ["folder/note"], "test/page");
+      expect(hasClass(link, "broken")).toBe(false);
+    }
+    const empty = runTransform(makeAnchorTree("empty/"), {}, ["folder/note"], "test/page");
+    expect(hasClass(empty, "broken")).toBe(true);
+  });
+
   it("leaves resolved links alone by default", () => {
     const link = runTransform(makeAnchorTree("other"), {}, ["other"], "test/page");
     expect(hasClass(link, "broken")).toBe(false);
