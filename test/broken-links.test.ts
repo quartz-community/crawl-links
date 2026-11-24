@@ -40,7 +40,18 @@ function hasClass(el: Element, className: string): boolean {
   return classes.includes(className);
 }
 
-describe("disableBrokenWikilinks - default (off)", () => {
+describe("disableBrokenWikilinks - default (on)", () => {
+  it("adds 'broken' to unresolved internal links by default, as Obsidian marks them", () => {
+    const link = runTransform(makeAnchorTree("missing"), {}, [], "test/page");
+    expect(hasClass(link, "internal")).toBe(true);
+    expect(hasClass(link, "broken")).toBe(true);
+  });
+
+  it("leaves resolved links alone by default", () => {
+    const link = runTransform(makeAnchorTree("other"), {}, ["other"], "test/page");
+    expect(hasClass(link, "broken")).toBe(false);
+  });
+
   it("does not add 'broken' class to unresolved internal links when option is off", () => {
     const tree = makeAnchorTree("missing");
     const link = runTransform(tree, { disableBrokenWikilinks: false }, [], "test/page");

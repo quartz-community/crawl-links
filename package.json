@@ -95,7 +95,7 @@
       "openLinksInNewTab": false,
       "lazyLoad": false,
       "externalLinkIcon": true,
-      "disableBrokenWikilinks": false
+      "disableBrokenWikilinks": true
     },
     "optionSchema": {
       "markdownLinkResolution": {

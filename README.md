@@ -38,14 +38,14 @@ ExternalPlugin.CrawlLinks({
 
 ## Configuration
 
-| Option                   | Type                                     | Default      | Description                                                                                                                            |
-| ------------------------ | ---------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `markdownLinkResolution` | `"absolute" \| "relative" \| "shortest"` | `"absolute"` | How to resolve internal links.                                                                                                         |
-| `prettyLinks`            | `boolean`                                | `true`       | Whether to use pretty links.                                                                                                           |
-| `openLinksInNewTab`      | `boolean`                                | `false`      | Whether to open links in a new tab.                                                                                                    |
-| `lazyLoad`               | `boolean`                                | `false`      | Whether to lazy load links.                                                                                                            |
-| `externalLinkIcon`       | `boolean`                                | `true`       | Whether to add an external link icon.                                                                                                  |
-| `disableBrokenWikilinks` | `boolean`                                | `false`      | When `true`, internal links whose resolved slug is not in `ctx.allSlugs` gain a `broken` CSS class (alongside `internal`) for styling. |
+| Option                   | Type                                     | Default      | Description                                                                                                                                                                |
+| ------------------------ | ---------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markdownLinkResolution` | `"absolute" \| "relative" \| "shortest"` | `"absolute"` | How to resolve internal links.                                                                                                                                             |
+| `prettyLinks`            | `boolean`                                | `true`       | Whether to use pretty links.                                                                                                                                               |
+| `openLinksInNewTab`      | `boolean`                                | `false`      | Whether to open links in a new tab.                                                                                                                                        |
+| `lazyLoad`               | `boolean`                                | `false`      | Whether to lazy load links.                                                                                                                                                |
+| `externalLinkIcon`       | `boolean`                                | `true`       | Whether to add an external link icon.                                                                                                                                      |
+| `disableBrokenWikilinks` | `boolean`                                | `true`       | When `true`, internal links whose resolved slug is not in `ctx.allSlugs` gain a `broken` CSS class (alongside `internal`) for styling, as Obsidian marks unresolved links. |
 
 ## Documentation
 

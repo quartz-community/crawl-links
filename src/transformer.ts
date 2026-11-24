@@ -27,7 +27,8 @@ export interface CrawlLinksOptions {
    * broken links can be styled distinctly. Applies to both wikilinks
    * (after they've been converted to `<a>` elements by
    * ObsidianFlavoredMarkdown) and markdown links, since both are
-   * indistinguishable `<a>` nodes at this phase of the pipeline.
+   * indistinguishable `<a>` nodes at this phase of the pipeline. Default
+   * `true`, as Obsidian marks unresolved links (`is-unresolved`).
    */
   disableBrokenWikilinks: boolean;
 }
@@ -38,7 +39,7 @@ const defaultOptions: CrawlLinksOptions = {
   openLinksInNewTab: false,
   lazyLoad: false,
   externalLinkIcon: true,
-  disableBrokenWikilinks: false,
+  disableBrokenWikilinks: true,
 };
 
 const isAbsoluteUrlWithOptions = isAbsoluteUrl as (
