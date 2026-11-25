@@ -27,9 +27,25 @@ export interface CrawlLinksOptions {
    * broken links can be styled distinctly. Applies to both wikilinks
    * (after they've been converted to `<a>` elements by
    * ObsidianFlavoredMarkdown) and markdown links, since both are
-   * indistinguishable `<a>` nodes at this phase of the pipeline.
+   * indistinguishable `<a>` nodes at this phase of the pipeline. Default
+   * `true`, as Obsidian marks unresolved links (`is-unresolved`).
    */
   disableBrokenWikilinks: boolean;
+}
+
+/**
+ * Whether a link's target is a page of the site. Tag and folder pages are generated after
+ * the transformers run, so they aren't in `allSlugs` yet: a tag page (`tags/…`) exists for
+ * every tag that is used, and a folder page (`folder/index`) for every folder with content.
+ */
+export function pageExists(allSlugs: readonly string[], full: string): boolean {
+  if (allSlugs.includes(full)) return true;
+  if (full === "index" || full.startsWith("tags/")) return true;
+  if (full.endsWith("/index")) {
+    const folder = full.slice(0, -"index".length);
+    return allSlugs.some((s) => s.startsWith(folder));
+  }
+  return false;
 }
 
 const defaultOptions: CrawlLinksOptions = {
@@ -38,7 +54,7 @@ const defaultOptions: CrawlLinksOptions = {
   openLinksInNewTab: false,
   lazyLoad: false,
   externalLinkIcon: true,
-  disableBrokenWikilinks: false,
+  disableBrokenWikilinks: true,
 };
 
 const isAbsoluteUrlWithOptions = isAbsoluteUrl as (
@@ -161,7 +177,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                   outgoing.add(simple);
                   node.properties["data-slug"] = full;
 
-                  if (opts.disableBrokenWikilinks && !ctx.allSlugs.includes(full)) {
+                  if (opts.disableBrokenWikilinks && !pageExists(ctx.allSlugs, full)) {
                     classes.push("broken");
                     node.properties.className = classes;
                   }
