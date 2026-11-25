@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0
+
+### Minor Changes
+
+- 4c0cc15: `disableBrokenWikilinks` is on by default: internal links to pages that don't exist get the `broken` class, as Obsidian marks unresolved links (`is-unresolved`), so Quartz's and Obsidian themes' unresolved-link styles apply. Tag and folder pages, which are generated later, count as existing. Set it to `false` for the old behaviour.
+
+### Patch Changes
+
+- 6343858: Footnote references and back-links keep the `internal` class but no longer get `internal-link`: Obsidian doesn't treat them as note links, and themes' link styles (underline, colour) overrode their footnote styles.
+
 ## 1.0.3
 
 ### Patch Changes
