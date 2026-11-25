@@ -98,8 +98,15 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<CrawlLinksOptions>> = (
                 let dest = node.properties.href as RelativeURL;
                 const classes = (node.properties.className ?? []) as string[];
                 const isExternal = isAbsoluteUrlWithOptions(dest, { httpOnly: false });
+                // Footnote anchors aren't note links: Obsidian gives them `footnote-link`,
+                // never `internal-link`, whose link styles would override theirs.
+                const isFootnote =
+                  node.properties.dataFootnoteRef !== undefined ||
+                  node.properties.dataFootnoteBackref !== undefined;
                 if (isExternal) {
                   classes.push("external", "external-link");
+                } else if (isFootnote) {
+                  classes.push("internal");
                 } else {
                   classes.push("internal", "internal-link");
                 }
