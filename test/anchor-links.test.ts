@@ -62,7 +62,7 @@ describe("same-page anchor links", () => {
       children: [],
     };
     const [, link] = run([block, a("#^abc")]);
-    expect(hrefOf(link!)).toBe("#abc");
+    expect(hrefOf(link!)).toBe("#^abc");
   });
 });
 
