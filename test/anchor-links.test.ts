@@ -58,7 +58,7 @@ describe("same-page anchor links", () => {
     const block: Element = {
       type: "element",
       tagName: "p",
-      properties: { id: "abc" },
+      properties: { id: "^abc" },
       children: [],
     };
     const [, link] = run([block, a("#^abc")]);
